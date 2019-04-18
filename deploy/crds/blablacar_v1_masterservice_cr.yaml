@@ -2,8 +2,4 @@ apiVersion: blablacar.com/v1
 kind: MasterService
 metadata:
   name: example-masterservice
-spec:
-  # Selector for the MasterService
-  selector:
-  # ServiceSpec
-  template: {}
+spec: # ServiceSpec

@@ -52,8 +52,17 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	// Watch for changes to secondary resource Pods and requeue the owner MasterService
+	// Watch for changes to secondary resource Services and requeue the owner MasterService
 	err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &blablacarv1.MasterService{},
+	})
+	if err != nil {
+		return err
+	}
+
+	// Watch for changes to secondary resource Endpoints and requeue the owner MasterService
+	err = c.Watch(&source.Kind{Type: &corev1.Endpoints{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
 		OwnerType:    &blablacarv1.MasterService{},
 	})
@@ -139,12 +148,20 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 
 	// TODO : check services ownership
 
-	// Get allService endpoint
+	// Get allService endpoint and set ownership
 	allServiceEndpoint := &corev1.Endpoints{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: allService.Name, Namespace: allService.Namespace}, allServiceEndpoint)
 	if err != nil {
 		reqLogger.Error(err, "Failed to get Endpoint", "Endpoint.Namespace", allService.Namespace, "Endpoint.Name", allService.Name)
 		return reconcile.Result{}, err
+	}
+	err = controllerutil.SetControllerReference(instance, allServiceEndpoint, r.scheme)
+	if err == nil {
+		err = r.client.Update(context.TODO(), allServiceEndpoint)
+		if err != nil {
+			reqLogger.Error(err, "Failed set owner for Endpoint", "Endpoint.Namespace", allServiceEndpoint.Namespace, "Endpoint.Name", allServiceEndpoint.Name)
+			return reconcile.Result{}, err
+		}
 	}
 
 	// Sort and get oldest address (from pod StartTime TOFIX ?)
@@ -169,7 +186,7 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 	masterEndpoint := &corev1.Endpoints{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, masterEndpoint)
 	if err != nil && errors.IsNotFound(err) {
-		dep := r.endpointForMasterService(masterService.Name, masterService.Namespace, allServiceEndpoint, oldestAddress)
+		dep := r.endpointForMasterService(instance, masterService.Name, masterService.Namespace, allServiceEndpoint, oldestAddress)
 		reqLogger.Info("Creating a new Endpoint", "Endpoint.Namespace", dep.Namespace, "Endpoint.Name", dep.Name)
 		err = r.client.Create(context.TODO(), dep)
 		if err != nil {
@@ -184,7 +201,7 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 	}
 
 	// We need to update the endpoint
-	dep := r.endpointForMasterService(masterService.Name, masterService.Namespace, allServiceEndpoint, oldestAddress)
+	dep := r.endpointForMasterService(instance, masterService.Name, masterService.Namespace, allServiceEndpoint, oldestAddress)
 	reqLogger.Info("Update an Endpoint", "Endpoint.Namespace", dep.Namespace, "Endpoint.Name", dep.Name)
 	err = r.client.Update(context.TODO(), dep)
 	if err != nil {
@@ -227,7 +244,7 @@ func (r *ReconcileMasterService) serviceForMasterservice(m *blablacarv1.MasterSe
 }
 
 // endpointForMasterService returns a masterservice Endpoint object
-func (r *ReconcileMasterService) endpointForMasterService(name string, namespace string, m *corev1.Endpoints, a corev1.EndpointAddress) *corev1.Endpoints {
+func (r *ReconcileMasterService) endpointForMasterService(m *blablacarv1.MasterService, name string, namespace string, e *corev1.Endpoints, a corev1.EndpointAddress) *corev1.Endpoints {
 	dep := &corev1.Endpoints{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "core/v1",
@@ -235,10 +252,10 @@ func (r *ReconcileMasterService) endpointForMasterService(name string, namespace
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
-			Namespace: m.Namespace,
+			Namespace: e.Namespace,
 		},
 		Subsets: []corev1.EndpointSubset{{
-			Ports:     m.Subsets[0].Ports,
+			Ports:     e.Subsets[0].Ports,
 			Addresses: []corev1.EndpointAddress{a},
 		}},
 	}
