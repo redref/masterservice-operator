@@ -126,6 +126,11 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 		reqLogger.Error(err, "Failed to get Service")
 		return reconcile.Result{}, err
 	}
+	err = controllerutil.SetControllerReference(instance, allService, r.scheme)
+	if err != nil {
+		reqLogger.Error(err, "We do not own service", "Service.Namespace", allService.Namespace, "Service.Name", allService.Name)
+		return reconcile.Result{}, err
+	}
 
 	// Check or create empty service => <MasterService.Name>
 	masterService := &corev1.Service{}
@@ -145,8 +150,11 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 		reqLogger.Error(err, "Failed to get Service")
 		return reconcile.Result{}, err
 	}
-
-	// TODO : check services ownership
+	err = controllerutil.SetControllerReference(instance, masterService, r.scheme)
+	if err != nil {
+		reqLogger.Error(err, "We do not own service", "Service.Namespace", masterService.Namespace, "Service.Name", masterService.Name)
+		return reconcile.Result{}, err
+	}
 
 	// Get allService endpoint and set ownership
 	allServiceEndpoint := &corev1.Endpoints{}
@@ -155,8 +163,9 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 		reqLogger.Error(err, "Failed to get Endpoint", "Endpoint.Namespace", allService.Namespace, "Endpoint.Name", allService.Name)
 		return reconcile.Result{}, err
 	}
+	ownerLen := len(allServiceEndpoint.OwnerReferences)
 	err = controllerutil.SetControllerReference(instance, allServiceEndpoint, r.scheme)
-	if err == nil {
+	if err == nil && ownerLen != len(allServiceEndpoint.OwnerReferences) {
 		err = r.client.Update(context.TODO(), allServiceEndpoint)
 		if err != nil {
 			reqLogger.Error(err, "Failed set owner for Endpoint", "Endpoint.Namespace", allServiceEndpoint.Namespace, "Endpoint.Name", allServiceEndpoint.Name)
@@ -202,7 +211,7 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 
 	// We need to update the endpoint
 	dep := r.endpointForMasterService(instance, masterService.Name, masterService.Namespace, allServiceEndpoint, oldestAddress)
-	reqLogger.Info("Update an Endpoint", "Endpoint.Namespace", dep.Namespace, "Endpoint.Name", dep.Name)
+	reqLogger.Info("Update an Endpoint", "Endpoint.Namespace", dep.Namespace, "Endpoint.Name", dep.Name, "Address", oldestAddress)
 	err = r.client.Update(context.TODO(), dep)
 	if err != nil {
 		reqLogger.Error(err, "Failed to update Endpoint", "Endpoint.Namespace", dep.Namespace, "Endpoint.Name", dep.Name)
