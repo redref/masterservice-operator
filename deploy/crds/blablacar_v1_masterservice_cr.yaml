@@ -3,5 +3,7 @@ kind: MasterService
 metadata:
   name: example-masterservice
 spec:
-  # Add fields here
-  size: 3
+  # Selector for the MasterService
+  selector:
+  # ServiceSpec
+  template: {}
