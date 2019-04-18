@@ -1,0 +1,7 @@
+apiVersion: blablacar.com/v1
+kind: MasterService
+metadata:
+  name: example-masterservice
+spec:
+  # Add fields here
+  size: 3
