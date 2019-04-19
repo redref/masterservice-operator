@@ -1,0 +1,13 @@
+---
+apiVersion: blablacar.com/v1
+kind: MasterService
+metadata:
+  name: hostname-server
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: hostname-server
