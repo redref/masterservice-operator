@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.0.5
+VERSION=0.0.6
 
 DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 cd "${DIR}"
@@ -13,7 +13,7 @@ operator-sdk generate k8s
 operator-sdk build eu.gcr.io/infra-sandbox-58fe57e9/masterservice-operator:${VERSION}
 docker push eu.gcr.io/infra-sandbox-58fe57e9/masterservice-operator:${VERSION}
 
-helm install -n masterservice-operator ./helm
+helm upgrade masterservice-operator ./helm --set version=${VERSION}
 echo "Waiting start"
 sleep 20
 helm test masterservice-operator --cleanup

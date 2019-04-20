@@ -190,6 +190,10 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 			}
 		}
 	}
+	// all endpoint is empty: exit success
+	if oldest == nil {
+		return reconcile.Result{}, nil
+	}
 
 	// Create or update our endpoint
 	masterEndpoint := &corev1.Endpoints{}
