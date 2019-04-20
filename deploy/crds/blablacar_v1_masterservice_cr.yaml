@@ -2,4 +2,12 @@ apiVersion: blablacar.com/v1
 kind: MasterService
 metadata:
   name: example-masterservice
-spec: # ServiceSpec
+spec:
+  ## Put your "classic service definition here"
+  ##  - CRD will create a <name>-all service, providing classic service
+  ##  - CRD will create a <name> service with the oldest pod found in the -all service
+  serviceSpec: ~
+  ## Promote Callback (optional) to the chosen pod
+  #callback:
+  #  port:
+  #  path: /promote
