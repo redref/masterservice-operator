@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.0.6
+VERSION=0.0.13
 
 DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 cd "${DIR}"

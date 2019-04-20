@@ -2,6 +2,8 @@ package masterservice
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 
 	blablacarv1 "github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1"
 
@@ -195,6 +197,25 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 		return reconcile.Result{}, nil
 	}
 
+	// Call callback
+	if instance.Spec.Callback.Port != 0 {
+		var path = "/promote"
+		if instance.Spec.Callback.Path != "" {
+			path = instance.Spec.Callback.Path
+		}
+		var url = "http://" + oldestAddress.IP + ":" + strconv.Itoa(int(instance.Spec.Callback.Port)) + "/" + path
+		reqLogger.Info("Calling callback", "Url", url, "Endpoint.Namespace", instance.Namespace, "Endpoint.Name", instance.Name)
+		resp, err := http.Get(url)
+		if err != nil {
+			reqLogger.Error(err, "Callback call failed", "Endpoint.Namespace", instance.Namespace, "Endpoint.Name", instance.Name)
+			return reconcile.Result{}, err
+		}
+		if resp.StatusCode != 200 {
+			reqLogger.Error(err, "Callback call failed", "Endpoint.Namespace", instance.Namespace, "Endpoint.Name", instance.Name, "Response", resp)
+			return reconcile.Result{}, err
+		}
+	}
+
 	// Create or update our endpoint
 	masterEndpoint := &corev1.Endpoints{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, masterEndpoint)
@@ -227,7 +248,7 @@ func (r *ReconcileMasterService) Reconcile(request reconcile.Request) (reconcile
 
 // serviceForMasterService returns a masterservice Service object
 func (r *ReconcileMasterService) serviceForMasterservice(m *blablacarv1.MasterService, master bool) *corev1.Service {
-	template := m.Spec
+	template := m.Spec.ServiceSpec
 	var name string
 	if master {
 		name = m.Name

@@ -5,13 +5,24 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+// +k8s:openapi-gen=true
+type MasterServiceCallback struct {
+	Port int32  `json:"port"`
+	Path string `json:"path,omitempty"` // Default is be /promote in controller logic
+}
+
+// MasterServiceSpec defines the desired state of MasterService
+// +k8s:openapi-gen=true
+type MasterServiceSpec struct {
+	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
+	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
+	ServiceSpec corev1.ServiceSpec    `json:"serviceSpec"`
+	Callback    MasterServiceCallback `json:"callback,omitempty"`
+}
 
 // MasterServiceStatus defines the observed state of MasterService
 // +k8s:openapi-gen=true
 type MasterServiceStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 }
@@ -24,7 +35,7 @@ type MasterService struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   corev1.ServiceSpec  `json:"spec,omitempty"`
+	Spec   MasterServiceSpec   `json:"spec"`
 	Status MasterServiceStatus `json:"status,omitempty"`
 }
 
