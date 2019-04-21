@@ -3,6 +3,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/Junonogis/masterservice-operator)](https://goreportcard.com/report/github.com/Junonogis/masterservice-operator)
 [![Build Status](https://travis-ci.org/Junonogis/masterservice-operator.svg?branch=master)](https://travis-ci.org/Junonogis/masterservice-operator)
 
+[Docker Repository](https://hub.docker.com/r/junonogis/masterservice-operator)
+
 Masterservice-operator is a tooling operator using a CustomResource named `MasterService`. This custom resource creates 2 services :
   * `name`-all : kubernetes service created with the given `serviceSpec`
   * `name` : kubernetes empty service populated by the operator
