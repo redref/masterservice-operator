@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	blablacarv1 "github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1"
+	blablacarv1 "github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"

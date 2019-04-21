@@ -1,0 +1,6 @@
+---
+replicas: 1
+image:
+  repository: junonogis/masterservice-operator
+  tag: latest
+  pullPolicy: Always

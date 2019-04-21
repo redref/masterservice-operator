@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/blablacar/masterservice-operator/pkg/controller/masterservice"
+	"github.com/Junonogis/masterservice-operator/pkg/controller/masterservice"
 )
 
 func init() {

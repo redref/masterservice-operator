@@ -4,7 +4,7 @@ metadata:
   name: masterservice-operator
   namespace: default
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       name: masterservice-operator
@@ -17,10 +17,10 @@ spec:
       containers:
         - name: masterservice-operator
           # Replace this with the built image name
-          image: eu.gcr.io/infra-sandbox-58fe57e9/masterservice-operator:{{ .Values.version }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           command:
           - masterservice-operator
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: WATCH_NAMESPACE
               value: ""

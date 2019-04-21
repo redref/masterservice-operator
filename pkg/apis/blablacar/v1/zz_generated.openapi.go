@@ -13,9 +13,9 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterService":       schema_pkg_apis_blablacar_v1_MasterService(ref),
-		"github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceSpec":   schema_pkg_apis_blablacar_v1_MasterServiceSpec(ref),
-		"github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceStatus": schema_pkg_apis_blablacar_v1_MasterServiceStatus(ref),
+		"github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterService":       schema_pkg_apis_blablacar_v1_MasterService(ref),
+		"github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceSpec":   schema_pkg_apis_blablacar_v1_MasterServiceSpec(ref),
+		"github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceStatus": schema_pkg_apis_blablacar_v1_MasterServiceStatus(ref),
 	}
 }
 
@@ -46,19 +46,19 @@ func schema_pkg_apis_blablacar_v1_MasterService(ref common.ReferenceCallback) co
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceSpec"),
+							Ref: ref("github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceStatus"),
+							Ref: ref("github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceSpec", "github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceSpec", "github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1.MasterServiceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 

@@ -1,7 +1,7 @@
 package apis
 
 import (
-	v1 "github.com/blablacar/masterservice-operator/pkg/apis/blablacar/v1"
+	v1 "github.com/Junonogis/masterservice-operator/pkg/apis/blablacar/v1"
 )
 
 func init() {
