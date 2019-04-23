@@ -4,7 +4,7 @@ metadata:
   name: masterservice-operator
   namespace: default
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       name: masterservice-operator
@@ -17,10 +17,10 @@ spec:
       containers:
         - name: masterservice-operator
           # Replace this with the built image name
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: REPLACE_IMAGE
           command:
           - masterservice-operator
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
               value: ""
