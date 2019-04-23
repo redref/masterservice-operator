@@ -1,1 +1,32 @@
-../../deploy/operator.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      name: masterservice-operator
+  template:
+    metadata:
+      labels:
+        name: masterservice-operator
+    spec:
+      serviceAccountName: masterservice-operator
+      containers:
+        - name: masterservice-operator
+          # Replace this with the built image name
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          command:
+          - masterservice-operator
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: WATCH_NAMESPACE
+              value: ""
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "masterservice-operator"
