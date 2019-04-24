@@ -272,7 +272,7 @@ func (r *ReconcileMasterService) serviceForMasterservice(m *blablacarv1.MasterSe
 		},
 		Spec: template,
 	}
-	// Set Memcached instance as the owner and controller
+	// Set Service instance as the owner and controller
 	controllerutil.SetControllerReference(m, dep, r.scheme)
 	return dep
 }
@@ -293,7 +293,7 @@ func (r *ReconcileMasterService) endpointForMasterService(m *blablacarv1.MasterS
 			Addresses: []corev1.EndpointAddress{a},
 		}},
 	}
-	// Set Memcached instance as the owner and controller
+	// Set Endpoint instance as the owner and controller
 	controllerutil.SetControllerReference(m, dep, r.scheme)
 	return dep
 }
